@@ -50,6 +50,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish semantic action refs
+        id: publish
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: bash ./scripts/sync-action-refs.sh
         env:
@@ -61,3 +62,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           webhook-uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
+          build-version: ${{ steps.publish.outputs.published || 'N/A' }}

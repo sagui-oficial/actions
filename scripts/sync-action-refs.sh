@@ -11,6 +11,8 @@ run_cmd() {
   fi
 }
 
+PUBLISHED=""
+
 echo "Syncing semantic refs for actions..."
 
 git fetch origin --tags
@@ -29,6 +31,12 @@ for pkg_dir in packages/*/; do
   major_ref="${pkg_name}/v${major}"
   exact_ref="${pkg_name}/v${version}"
 
+  # Skip packages whose exact version tag already exists on remote
+  if git ls-remote --tags origin "refs/tags/${exact_ref}" | grep -q "${exact_ref}"; then
+    echo "Skipping ${pkg_name}@${version}: tag ${exact_ref} already exists"
+    continue
+  fi
+
   split_commit=$(git subtree split --prefix "$pkg_dir" HEAD)
 
   echo "Publishing ${pkg_name}@${version}"
@@ -43,6 +51,22 @@ for pkg_dir in packages/*/; do
 
   run_cmd "git tag -f ${exact_ref} ${split_commit}"
   run_cmd "git push origin refs/tags/${exact_ref} --force"
+
+  if [[ -n "$PUBLISHED" ]]; then
+    PUBLISHED="${PUBLISHED}, ${pkg_name}@v${version}"
+  else
+    PUBLISHED="${pkg_name}@v${version}"
+  fi
 done
 
-echo "Semantic refs sync completed."
+if [[ -z "$PUBLISHED" ]]; then
+  PUBLISHED="no new packages"
+  echo "No packages had version changes to publish."
+fi
+
+# Export for downstream steps
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  echo "published=${PUBLISHED}" >> "$GITHUB_OUTPUT"
+fi
+
+echo "Semantic refs sync completed: ${PUBLISHED}"
