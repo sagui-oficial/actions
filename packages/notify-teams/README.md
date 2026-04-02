@@ -15,12 +15,14 @@ GitHub Composite Action that sends workflow notifications to Microsoft Teams via
 ```yaml
 - name: Notify Teams
   if: always()
-  uses: sagui-oficial/actions/packages/notify-teams@v1
+  uses: sagui-oficial/actions/packages/notify-teams@notify-teams/v1
   with:
     github-token: ${{ secrets.GITHUB_TOKEN }}
     webhook-uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
     build-version: "1.2.3"
 ```
+
+> Pin exato: `@notify-teams/v1.1.0`
 
 ## Notification Contents
 

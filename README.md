@@ -11,9 +11,21 @@ Monorepo de GitHub Actions compartilhadas, versionadas com [Changesets](https://
 ## Como usar em outro repositório
 
 ```yaml
-uses: sagui-oficial/actions/packages/<action-name>@v1
+uses: sagui-oficial/actions/packages/<action-name>@<action-name>/v1
 ```
 
+Exemplo concreto:
+
+```yaml
+- name: Notify Teams
+  uses: sagui-oficial/actions/packages/notify-teams@notify-teams/v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    webhook-uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
+```
+
+> Para pin exato: `@notify-teams/v1.1.0`
+>
 > Para repositórios privados, o repo de actions deve estar como **Internal** ou na mesma organização.
 
 ## Desenvolvimento
@@ -57,4 +69,4 @@ pnpm changeset
 - `<action>/v1.0.0` — tag exata
 - `<action>/v1` — tag major (aponta para o último `v1.x.x`)
 
-Use `@v1` para atualizações automáticas ou `@v1.2.3` para fixar versão.
+No `uses`, o ref é o nome da tag: `@<action>/v1` (major) ou `@<action>/v1.2.3` (pin exato).
