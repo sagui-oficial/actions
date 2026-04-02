@@ -1,5 +1,11 @@
 # @sagui-actions/notify-teams
 
+## 1.2.1
+
+### Patch Changes
+
+- 71c8da7: Improve Teams notification: send only on actual release, remove duplicate status, add delivery date and author profile link
+
 ## 1.2.0
 
 ### Minor Changes
