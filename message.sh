@@ -20,6 +20,8 @@ elif [[ "${RUN_STATUS}" == "cancelled" ]]; then
   THEME_COLOR="FFA500"
 fi
 
+DEPLOY_DATE=$(date -u '+%d/%m/%Y %H:%M UTC')
+
 VERSION_SECTION=""
 if [[ -n "${BUILD_VERSION}" ]]; then
   VERSION_SECTION=$(cat <<EOF
@@ -55,11 +57,11 @@ PAYLOAD=$(cat <<EOF
         },
         {
           "name": "Triggered by",
-          "value": "${ACTOR}"
+          "value": "[${ACTOR}](https://github.com/${ACTOR})"
         },
         {
-          "name": "Status",
-          "value": "${STATUS_TEXT}"
+          "name": "Date",
+          "value": "${DEPLOY_DATE}"
         }${VERSION_SECTION}
       ],
       "markdown": true
