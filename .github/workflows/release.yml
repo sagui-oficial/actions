@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Version & Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Validate actions
+        run: pnpm -r run validate
+
+      - name: Create Release PR or Tag
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          title: "chore: version packages"
+          commit: "chore: version packages"
+          version: pnpm version-packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag major version
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          # For each package with a new version, create/update major version tags
+          for pkg_dir in packages/*/; do
+            pkg_name=$(basename "$pkg_dir")
+            pkg_json="${pkg_dir}package.json"
+
+            if [[ ! -f "$pkg_json" ]]; then
+              continue
+            fi
+
+            version=$(node -p "require('./${pkg_json}').version")
+            major=$(echo "$version" | cut -d. -f1)
+
+            # Check if the exact version tag already exists
+            tag="${pkg_name}/v${version}"
+            major_tag="${pkg_name}/v${major}"
+
+            if git rev-parse "$tag" >/dev/null 2>&1; then
+              echo "Tag $tag already exists, skipping"
+              continue
+            fi
+
+            echo "Creating tags for ${pkg_name}@${version}"
+
+            # Create exact version tag
+            git tag "$tag"
+
+            # Create/update major version tag
+            git tag -f "$major_tag"
+
+            git push origin "$tag"
+            git push origin "$major_tag" --force
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Teams
+        if: always()
+        uses: ./packages/notify-teams
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          webhook-uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
