@@ -1,0 +1,43 @@
+name: Setup Node and PNPM
+description: Configure Node.js from .nvmrc, setup pnpm, and install dependencies
+
+inputs:
+  node-version-file:
+    description: Path to the Node.js version file
+    required: false
+    default: .nvmrc
+  install-args:
+    description: Additional pnpm install arguments
+    required: false
+    default: --frozen-lockfile
+
+outputs:
+  node-version:
+    description: Resolved Node.js version (e.g. 24.0.0)
+    value: ${{ steps.normalize_node_version.outputs.value }}
+
+runs:
+  using: composite
+  steps:
+    - name: Configure PNPM
+      uses: pnpm/action-setup@v5
+      with:
+        run_install: false
+
+    - name: Setup NodeJS
+      id: setup_node
+      uses: actions/setup-node@v5
+      with:
+        node-version-file: ${{ inputs.node-version-file }}
+        cache: pnpm
+
+    - name: Normalize Node version output
+      id: normalize_node_version
+      shell: bash
+      run: echo "value=${NODE_VERSION#v}" >> "$GITHUB_OUTPUT"
+      env:
+        NODE_VERSION: ${{ steps.setup_node.outputs.node-version }}
+
+    - name: Install project packages
+      shell: bash
+      run: pnpm install ${{ inputs.install-args }}
