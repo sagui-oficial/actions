@@ -57,9 +57,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Notify Teams
-        if: always()
+        if: steps.publish.outputs.published != ''
         uses: ./packages/notify-teams
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           webhook-uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
-          build-version: ${{ steps.publish.outputs.published || 'N/A' }}
+          build-version: ${{ steps.publish.outputs.published }}
