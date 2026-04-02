@@ -7,27 +7,8 @@ Monorepo de GitHub Actions compartilhadas, versionadas com [Changesets](https://
 | Action | Descrição |
 | --- | --- |
 | [notify-teams](./packages/notify-teams/README.md) | Notificação para Microsoft Teams via webhook |
+| [setup-node-pnpm](./packages/setup-node-pnpm/README.md) | Setup Node.js, pnpm e install de dependências |
 
-## Como usar em outro repositório
-
-```yaml
-uses: sagui-oficial/actions@<action-name>/v1
-```
-
-Exemplo concreto:
-
-```yaml
-- name: Notify Teams
-  uses: sagui-oficial/actions@notify-teams/v1
-  with:
-    github-token: ${{ secrets.GITHUB_TOKEN }}
-    webhook-uri: ${{ secrets.TEAMS_WEBHOOK_URI }}
-```
-
-> Para pin exato: `@notify-teams/v1.1.0`
->
-> Compatibilidade (formato antigo): `sagui-oficial/actions/packages/notify-teams@notify-teams/v1`
->
 > Para repositórios privados, o repo de actions deve estar como **Internal** ou na mesma organização.
 
 ## Desenvolvimento

@@ -1,0 +1,9 @@
+{
+  "name": "@sagui-actions/setup-node-pnpm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub Composite Action to setup Node.js, pnpm, and install dependencies",
+  "scripts": {
+    "validate": "echo 'No validation needed for this action'"
+  }
+}
