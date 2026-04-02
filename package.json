@@ -1,0 +1,9 @@
+{
+  "name": "@sagui-actions/notify-teams",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub Composite Action to send notifications to Microsoft Teams",
+  "scripts": {
+    "validate": "bash -n message.sh"
+  }
+}
