@@ -49,41 +49,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Tag major version
+      - name: Publish semantic action refs
         if: steps.changesets.outputs.hasChangesets == 'false'
-        run: |
-          # For each package with a new version, create/update major version tags
-          for pkg_dir in packages/*/; do
-            pkg_name=$(basename "$pkg_dir")
-            pkg_json="${pkg_dir}package.json"
-
-            if [[ ! -f "$pkg_json" ]]; then
-              continue
-            fi
-
-            version=$(node -p "require('./${pkg_json}').version")
-            major=$(echo "$version" | cut -d. -f1)
-
-            # Check if the exact version tag already exists
-            tag="${pkg_name}/v${version}"
-            major_tag="${pkg_name}/v${major}"
-
-            if git rev-parse "$tag" >/dev/null 2>&1; then
-              echo "Tag $tag already exists, skipping"
-              continue
-            fi
-
-            echo "Creating tags for ${pkg_name}@${version}"
-
-            # Create exact version tag
-            git tag "$tag"
-
-            # Create/update major version tag
-            git tag -f "$major_tag"
-
-            git push origin "$tag"
-            git push origin "$major_tag" --force
-          done
+        run: bash ./scripts/sync-action-refs.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
