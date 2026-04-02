@@ -1,13 +1,29 @@
 {
   "name": "sagui-actions",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared GitHub Actions monorepo",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset tag",
+    "lint": "eslint 'packages/**/*.{ts,js,sh,yml,yaml}'",
+    "lint:fix": "eslint 'packages/**/*.{ts,js,sh,yml,yaml}' --fix",
+    "validate": "pnpm lint && pnpm -r run validate",
+    "prepare": "husky"
   },
-  "keywords": [],
-  "author": "Bruno Macedo",
-  "license": "ISC",
-  "packageManager": "pnpm@10.28.0"
+  "devDependencies": {
+    "@changesets/cli": "^2.30.0",
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "eslint-plugin-yml": "^1.19.1",
+    "globals": "^15.15.0",
+    "husky": "^9.1.7",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.58.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20"
+  }
 }
